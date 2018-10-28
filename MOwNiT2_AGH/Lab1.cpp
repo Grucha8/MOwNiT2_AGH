@@ -1,10 +1,10 @@
-#include "stdafx.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
 #include <cmath>
 #include <chrono>
+#include <fstream>
 
 using namespace std;
 
@@ -323,6 +323,8 @@ void zadania(T A, T Pom, T1 X_po, int* X, T1 B, int n, T2 pomocnicza) {
 
 int main()
 {
+    freopen(".\\Outputs\\out1.txt","w",stdout);
+
 	srand(time(NULL));
 	int n;
 
