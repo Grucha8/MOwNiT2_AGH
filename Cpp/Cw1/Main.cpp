@@ -1,40 +1,21 @@
-#include <iostream>
-#include <cstdlib>
-#include <ctime>
-#include <iomanip>
-#include <cmath>
-#include <chrono>
-#include <fstream>
+#include "../importy.h"
+#include "Macierze.cpp"
+#include "../Normy.cpp"
 
 using namespace std;
 
 // Ax = b
-int PRECISION;
-bool PFLAG = true;
 int PARAM_K = 7, PARAM_M = 4;
 
+// funkcja do generowania elementow wektora X ze zbioru {-1, 1}
+void macierzX(int* X, int n) {
+    int pom[] = { 1, -1 };
 
-template<typename T, typename T1>
-T1 euklidesNorm(T X, int n, T1 _) {
-	T1 sum = 0;
-
-	for (int i = 0; i < n; i++){
-		sum += (pow(X[i], 2));
-	}
-
-	return (sqrt(sum));
+    for (int i = 0; i < n; i++)
+        X[i] = pom[rand() % 2];
 }
 
-template<typename T, typename T1>
-T1 maxNorm(T A, int n, T1 _) {
-	T1 max = 0;
-
-	for (int i = 0; i < n; i++){
-			if (abs(A[i]) > max) max = A[i];
-	}
-
-	return max;
-}
+//=================================================
 
 template<typename T>
 void ludist(int n, T A)
@@ -79,79 +60,7 @@ void lusolve(int k, int n, T A, T X, T1 _)
 	}
 }
 
-template<typename T, typename T1>
-double uwarunkowanie(T Pom, T A, int n, T1 _) {
-	double maxA = 0;
-	double maxPom = 0;
-	double sumA, sumPom;
 
-	for (size_t i = 0; i < n; i++){
-		sumA = 0;
-		sumPom = 0;
-		for (size_t j = 0; j < n; j++){
-			sumA += abs(A[i][j]);
-			sumPom += abs(Pom[i][j]);
-		}
-		if (sumA > maxA) maxA = sumA;
-		if (sumPom > maxPom) maxPom = sumA;
-	}
-
-	return maxA * maxPom;
-}
-
-//====================================================================
-//====================================================================
-
-// wypelnienie macierzy A
-template<typename T>
-void matrixA1(T A, int n) {
-	for (int i = 0; i < n; i++) {
-		for (int j = 0; j < n; j++) {
-			if (i == 0)
-				A[i][j] = 1;
-			else
-				A[i][j] = ((1.0 / (i + j + 2.0 - 1.0)));
-		}
-	}
-}
-
-template<typename T>
-void matrixA2(T A, int n) {
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			if (j >= i)
-				A[i][j] = ((2 * i + 1.0) / (j + 1.0));
-			else
-				A[i][j] = A[j][i];
-		}
-	}
-}
-
-template<typename T>
-void matrixA3a(T A, int n, int k, int m) {
-	for (int i = 0; i < n; i++)
-	{
-		for (int j = 0; j < n; j++)
-		{
-			if (i == j) A[i][j] = k;
-			else if (j == i + 1) A[i][j] = (1.0 / (i + m));
-			else if (j == i - 1) A[i][j] = (k / (i + m + 1.0));
-			else A[i][j] = 0;
-		}
-	}
-}
-
-// funkcja do generowania elementow wektora X ze zbioru {-1, 1}
-void matrixX(int* X, int n) {
-	int pom[] = { 1, -1 };
-	
-	for (int i = 0; i < n; i++)
-		X[i] = pom[rand() % 2];
-}
-
-//====================================================================
 //====================================================================
 
 // mnozenie macierzy A i wektora X
@@ -200,7 +109,7 @@ void gaus(T A, T1 B, T1 X, int n, T2 _) {	//n * 2*n/2 * n/4 + n * n/2 = n^3/4 + 
 }
 
 template<typename T, typename T1, typename T2>  //t1 = float* | t = float**
-void trojDiagonalnaSolver(T A, T1 B, T1 X, int n, T2 _) {
+void trojDiagonalnaSolver(T A, T1 B, T1 X, int n, T2 _) {   //a b c
 	//a_i = A[i][i]; b_i = A[i][i-1]; c_i = A[i][i+1]
 	
 	T2* l = new T2[n];			//1...n-1
@@ -225,6 +134,30 @@ void trojDiagonalnaSolver(T A, T1 B, T1 X, int n, T2 _) {
 	for (int i = n-2; i >= 0; i--){
 		X[i] = (y[i] - A[i][i + 1] * X[i + 1]) / u[i];
 	}
+}
+
+template <typename T2, typename T1, typename T>
+void metodaThomasa(T2 A, T1 X, T1 B, int n, T _){   //a b c
+    T1 beta = new T[n];
+    T1 gamma = new T[n];
+
+    beta[0] = -A[0][1] / A[0][0];
+    gamma[0] = B[0] / A[0][0];
+
+    // wypelanianie beta i gamma
+    for (int i = 1; i < n-1; ++i) {
+        beta[i] = -A[i][i+1] / (A[i][i-1] * beta[i-1] + A[i][i]);
+        gamma[i] = (B[i] - A[i][i-1] * gamma[i-1]) / (A[i][i-1] * beta[i-1] + A[i][i]);
+    }
+    beta[n-1] = 0;
+    gamma[n-1] = (B[n-1] - A[n-1][n-2] * gamma[n-2]) / (A[n-1][n-2] * beta[n-2] + A[n-1][n-1]);
+
+    // wypelanianie X
+    X[n-1] = gamma[n-1];
+
+    for (int i = n-2; i >= 0; --i) {
+        X[i] = beta[i] * X[i+1] + gamma[i];
+    }
 }
 
 
@@ -264,6 +197,17 @@ void zad3a(T A, int* X, T1 X_po, T1 B, int n, T2 pomocnicza) {
 	cout << "\nNorma Euklidesowska: " << euklidesNorm(X_po, n, pomocnicza) << "   " << euklidesNorm(X, n, pomocnicza) << endl;
 	cout << "Norma Max: " << maxNorm(X_po, n, pomocnicza) << endl;
 	cout << "Czas :" << microseconds << "microseconds" << endl;
+
+    cout << "\n================\nMetoda Thomas'a\n";
+    start = chrono::high_resolution_clock::now();
+    metodaThomasa(A, X_po, B, n, pomocnicza);
+    elapsed = chrono::high_resolution_clock::now() - start;
+
+    microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+
+    cout << "\nNorma Euklidesowska: " << euklidesNorm(X_po, n, pomocnicza) << "   " << euklidesNorm(X, n, pomocnicza) << endl;
+    cout << "Norma Max: " << maxNorm(X_po, n, pomocnicza) << endl;
+    cout << "Czas :" << microseconds << "microseconds" << endl;
 }
 
 //==========================================================
@@ -323,17 +267,17 @@ void zadania(T A, T Pom, T1 X_po, int* X, T1 B, int n, T2 pomocnicza) {
 
 int main()
 {
-    freopen(".\\Outputs\\out1.txt","w",stdout);
+    freopen(".\\Cw1\\output.txt","w",stdout);
 
 	srand(time(NULL));
 	int n;
 
-	int N[] = { 2, 4, 8, 10, 20, 50, 100, 250, 1000 };
+	int N[] = { 2, 3, 8, 10, 20, 50, 100, 250, 1000 };
 
 	for (size_t i = 0; i < 9; i++) {
 		n = N[i];
 		int* X = new int[n];
-		matrixX(X, n);
+		macierzX(X, n);
 
 		cout << "\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\nROZMIAR MACIERZY TO: " << n << endl;
 		for (size_t j = 0; j < 2; j++)
