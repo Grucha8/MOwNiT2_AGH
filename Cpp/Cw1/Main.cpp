@@ -16,7 +16,7 @@ void macierzX(int* X, int n) {
 }
 
 //=================================================
-
+// ROZKLAD LU
 template<typename T>
 void ludist(int n, T A)
 {
@@ -75,6 +75,15 @@ void matrixMul(T A, int* X, T1 B, int n, T2 _) {
 		}
 		B[i] = sum;
 	}
+}
+
+template <typename T>
+T wektorSub(int* X, T Y, int n){
+    for (int i = 0; i < n; ++i) {
+        Y[i] -= X[i];
+    }
+
+    return Y;
 }
 
 
@@ -175,8 +184,8 @@ void zad1_2(T A, int* X, T1 X_po, T1 B, int n, T2 pomocnicza) {
 
 	long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-	cout << "\nNorma Euklidesowska: " << euklidesNorm(X_po, n, pomocnicza) << "   " << euklidesNorm(X, n, pomocnicza) << endl;
-	cout << "Norma Max: " << maxNorm(X_po, n, pomocnicza) << endl;
+    cout << "\nNorma Max: " << maxNorm(X_po, n, pomocnicza);
+	cout << "\nNorma Euklidesowska: " << euklidesNorm(wektorSub(X, X_po, n), n, pomocnicza) << endl;
 	cout << "Czas :" << microseconds << "microseconds" << endl;
 
 }
@@ -188,31 +197,21 @@ void zad3a(T A, int* X, T1 X_po, T1 B, int n, T2 pomocnicza) {
 	cout << "\n================\nMacierz trojdiagonalna\n";
 	matrixA3a(A, n, PARAM_K, PARAM_M);
 
-	auto start = chrono::high_resolution_clock::now();
-	trojDiagonalnaSolver(A, B, X_po, n, pomocnicza);
-	auto elapsed = chrono::high_resolution_clock::now() - start;
-
-	long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
-
-	cout << "\nNorma Euklidesowska: " << euklidesNorm(X_po, n, pomocnicza) << "   " << euklidesNorm(X, n, pomocnicza) << endl;
-	cout << "Norma Max: " << maxNorm(X_po, n, pomocnicza) << endl;
-	cout << "Czas :" << microseconds << "microseconds" << endl;
-
     cout << "\n================\nMetoda Thomas'a\n";
-    start = chrono::high_resolution_clock::now();
+    auto start = chrono::high_resolution_clock::now();
     metodaThomasa(A, X_po, B, n, pomocnicza);
-    elapsed = chrono::high_resolution_clock::now() - start;
+    auto elapsed = chrono::high_resolution_clock::now() - start;
 
-    microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+    long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    cout << "\nNorma Euklidesowska: " << euklidesNorm(X_po, n, pomocnicza) << "   " << euklidesNorm(X, n, pomocnicza) << endl;
-    cout << "Norma Max: " << maxNorm(X_po, n, pomocnicza) << endl;
+    cout << "\nNorma Max: " << maxNorm(X_po, n, pomocnicza);
+    cout << "\nNorma Euklidesowska: " << euklidesNorm(wektorSub(X, X_po, n), n, pomocnicza) << endl;
     cout << "Czas :" << microseconds << "microseconds" << endl;
 }
 
 //==========================================================
 
-template<typename T>
+template<typename T>    //T == macierz
 void wypelnienie_odwrotnej(T X, int n) {
 	for (int i = 0; i < n; i++)
 	{
@@ -272,9 +271,9 @@ int main()
 	srand(time(NULL));
 	int n;
 
-	int N[] = { 2, 3, 8, 10, 20, 50, 100, 250, 1000 };
+	int N[] = { 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 20, 50, 100, 250, 1000 };
 
-	for (size_t i = 0; i < 9; i++) {
+	for (size_t i = 0; i < 16; i++) {
 		n = N[i];
 		int* X = new int[n];
 		macierzX(X, n);
