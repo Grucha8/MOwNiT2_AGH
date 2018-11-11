@@ -7,7 +7,7 @@ import pprint
 K = 11
 M = 3
 NUMTYPE = np.float64
-HIGHEST_MATRIX_SZIE = 5000
+HIGHEST_MATRIX_SZIE = 2500
 
 
 # macierz A
@@ -116,13 +116,12 @@ def pierwsza_czesc(xh, sizes, ros, xs):
         for ro in ros:
             print(f"\n----------------\nRO = {ro}")
 
-            for xd, i in zip(xs, range(5)):
+            for xd, i in zip(xs, range(4)):
 
                 print("\nWektor poczatkowy: ", end='')
                 if i == 0: print("Same zera")
                 elif i == 1: print("Same 1")
-                elif i == 2: print("Same -1")
-                elif i == 3: print("Same 5")
+                elif i == 2: print("Same 100")
                 else: print("Losowe")
 
                 x_p = np.resize(xd, n)
@@ -141,7 +140,7 @@ def pierwsza_czesc(xh, sizes, ros, xs):
 
 
 def druga_czesc(xh, sizes, ros, xs):
-    omegas = (0.01 , 0.5, 1, 1.1, 1.5, 2, -1)
+    omegas = (0.01, 0.5, 1, 1.1, 1.5, 2, -1)
     for n in sizes:
         print(f"===================================================="
               f"\nSize: {n}")
@@ -157,16 +156,14 @@ def druga_czesc(xh, sizes, ros, xs):
         for ro in ros:
             print(f"\n----------------\nRO = {ro}")
 
-            for xd, i in zip(xs, range(5)):
+            for xd, i in zip(xs, range(4)):
                 print("\nWektor poczatkowy: ", end='')
                 if i == 0:
                     print("Same zera")
                 elif i == 1:
                     print("Same 1")
                 elif i == 2:
-                    print("Same -1")
-                elif i == 3:
-                    print("Same 5")
+                    print("Same 100")
                 else:
                     print("Losowe")
 
@@ -200,21 +197,24 @@ if __name__ == '__main__':
 
     xh = np.random.choice([-1., 1.], HIGHEST_MATRIX_SZIE)
     sizes = (2, 4, 8, 20, 100, 200, 1000, HIGHEST_MATRIX_SZIE)
-    ros = (0.01, 0.001, 0.0001, 0.00001, 1e-10)
-    omegas = (1, 1.1, 1.5, 2, -1)
+    ros = (0.01, 0.00001, 1e-10)
     xs = (
         np.zeros(HIGHEST_MATRIX_SZIE, dtype=NUMTYPE),              # same zera
         np.ones(HIGHEST_MATRIX_SZIE, dtype=NUMTYPE),               # same jedynki
-        np.full(HIGHEST_MATRIX_SZIE, -1, dtype=NUMTYPE),           # same -1
-        np.full(HIGHEST_MATRIX_SZIE, 5, dtype=NUMTYPE),            # same piatki
         np.full(HIGHEST_MATRIX_SZIE, 100, dtype=NUMTYPE),          # same 100
         2 * np.random.ranf(HIGHEST_MATRIX_SZIE) - 1                # losowe liczby zmiennoprzecinkowe od -1 do 1
     )
     print(f"Wektor x:\n {xh}\n======================================")
 
-    print(f"Losowy wektor wejsciowy x: {xs[4]}")
+    print(f"Losowy wektor wejsciowy x: {xs[3]}")
 
-    pierwsza_czesc(xh, sizes, ros, xs)
+    pierwsza_czesc(xh, [HIGHEST_MATRIX_SZIE], ros, xs)
+
+    print('======================================================================')
+    print('======================================================================')
+    print('======================================================================')
+
+    druga_czesc(xh, sizes, ros, xs)
 
 
 
