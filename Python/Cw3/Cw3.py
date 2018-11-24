@@ -4,6 +4,9 @@ import csv
 
 #[-2.5, 0.5]
 NMAX = 500  # maksymalna liczba iteracji
+csv_writer1 = csv.writer(open('output1.csv', mode='w', newline=''),  delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+csv_writer2 = csv.writer(open('output2.csv', mode='w', newline=''),  delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
 
 def f(x):
     return x**14 + x**16
@@ -14,7 +17,9 @@ def fprim_(x):
 
 
 def secant(a, b, nmax, eps, stop):
-    a_prev = 1
+    aa = a
+    bb = b
+
     fa = f(a)
     fb = f(b)
     if fa == fb:
@@ -25,7 +30,7 @@ def secant(a, b, nmax, eps, stop):
         a, b = b, a
         fa, fb = fb, fa
 
-    for n in range(2, nmax):
+    for n in range(1, nmax):
         if np.abs(fa) > np.abs(fb):
             a, b = b, a
             fa, fb = fb, fa
@@ -34,15 +39,16 @@ def secant(a, b, nmax, eps, stop):
         b, fb = a, fa
         d = d * fa
 
-        if stop and n > 2:
-            if np.abs(a - a_prev) < eps:
+        if stop:
+            if np.abs(d) < eps:
+                csv_writer1.writerow([aa, bb, n, a, fa])
                 print(n, a, fa, sep="\t\t")
                 return
         else:
-            if np.abs(fa) < eps:
+            if np.abs(f(a-d)) < eps:
+                csv_writer2.writerow([aa, bb, n, a, fa])
                 print(n, a, fa, sep="\t\t")
                 return
-        a_prev = a
         a = a - d
         fa = f(a)
 
@@ -144,23 +150,31 @@ def part1():
     print("METODA SIECZNYCH")
     for eps in epss:
         print("--------------------------------------------------\neps =", eps)
-        x = -2.4
-        while (x < 0.6):
-            print("\nx =", x)
-            print("Pierwszy warunek stopu".capitalize())
-            secant(-2.5, x, NMAX, eps, 0)
-            print("Drugi warunek stopu".capitalize())
-            secant(-2.5, x, NMAX, eps, 1)
-            x = x + 0.1
-        print("######################")
-        x = 0.4
-        while (x > -2.5):
-            print("\nx =", x)
-            print("Pierwszy warunek stopu".capitalize())
-            secant(x, 0.5, NMAX, eps, 0)
-            print("Drugi warunek stopu".capitalize())
-            secant(x, 0.5, NMAX, eps, 1)
-            x = x - 0.1
+        csv_writer1.writerow(['eps', eps])
+        csv_writer2.writerow(['eps', eps])
+        for kryt in range(2):
+            if kryt:
+                print("====Pierwszy warunek stopu====".capitalize())
+            else:
+                print("Drugi warunek stopu".capitalize())
+
+            x = -2.4
+            while (x < 0.6):
+                print("\n", x, "\t", 0.5)
+                if kryt:
+                    secant(-2.5, x, NMAX, eps, 0)
+                else:
+                    secant(-2.5, x, NMAX, eps, 1)
+                x = x + 0.1
+            print("######################")
+            x = 0.4
+            while (x > -2.5):
+                print("\n", -2.5, '\t', x)
+                if kryt:
+                    secant(x, 0.5, NMAX, eps, 0)
+                else:
+                    secant(x, 0.5, NMAX, eps, 1)
+                x = x - 0.1
 
 
 def part2():
