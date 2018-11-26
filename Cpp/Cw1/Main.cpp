@@ -77,13 +77,13 @@ void matrixMul(T A, int* X, T1 B, int n, T2 _) {
 	}
 }
 
-template <typename T>
-T wektorSub(int* X, T Y, int n){
+template <typename T, typename T1>
+T wektorSub(int* X, T Y, T wyj, int n, T1 _){
     for (int i = 0; i < n; ++i) {
-        Y[i] -= X[i];
+        wyj[i] = Y[i] - X[i];
     }
 
-    return Y;
+    return wyj;
 }
 
 
@@ -145,27 +145,43 @@ void trojDiagonalnaSolver(T A, T1 B, T1 X, int n, T2 _) {   //a b c
 	}
 }
 
-template <typename T2, typename T1, typename T>
-void metodaThomasa(T2 A, T1 X, T1 B, int n, T _){   //a b c
-    T1 beta = new T[n];
-    T1 gamma = new T[n];
+template <typename T1, typename T>
+void metodaThomasa(T1 a, T1 b, T1 c, T1 X, T1 B, int n, T _){   //a b c
+    /*  a = A[i][i-1]
+     *  b = A[i][i]
+     *  c = A[i][i+1]
+     */
+//    n--;
+//
+//    c[0] /= b[0];
+//    B[0] /= b[0];
+//
+//    for (int i = 1; i < n; i++) {
+//        c[i] /= b[i] - a[i]*c[i-1];
+//        B[i] = (B[i] - a[i]*B[i-1]) / (b[i] - a[i]*c[i-1]);
+//    }
+//
+//    B[n] = (B[n] - a[n]*B[n-1]) / (b[n] - a[n]*c[n-1]);
+//
+//    for (int i = n; i-- > 0;) {
+//        B[i] -= c[i]*B[i+1];
+//    }
+//
+//    for (int i = 0; i <= n; ++i) {
+//        X[i] = B[i];
+//    }
 
-    beta[0] = -A[0][1] / A[0][0];
-    gamma[0] = B[0] / A[0][0];
 
-    // wypelanianie beta i gamma
-    for (int i = 1; i < n-1; ++i) {
-        beta[i] = -A[i][i+1] / (A[i][i-1] * beta[i-1] + A[i][i]);
-        gamma[i] = (B[i] - A[i][i-1] * gamma[i-1]) / (A[i][i-1] * beta[i-1] + A[i][i]);
+
+    for (int i = 1; i < n; i++) {
+        T W = a[i] / b[i-1];
+        b[i] = b[i] - W * c[i-1];
+        B[i] = B[i] - W * B[i-1];
     }
-    beta[n-1] = 0;
-    gamma[n-1] = (B[n-1] - A[n-1][n-2] * gamma[n-2]) / (A[n-1][n-2] * beta[n-2] + A[n-1][n-1]);
 
-    // wypelanianie X
-    X[n-1] = gamma[n-1];
-
-    for (int i = n-2; i >= 0; --i) {
-        X[i] = beta[i] * X[i+1] + gamma[i];
+    X[n-1] = B[n-1] / b[n-1];
+    for (int i = n-2; i >= 0; i--) {
+        X[i] = (B[i] - c[i] * X[i+1]) / b[i];
     }
 }
 
@@ -184,28 +200,47 @@ void zad1_2(T A, int* X, T1 X_po, T1 B, int n, T2 pomocnicza) {
 
 	long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    cout << "\nNorma Max: " << maxNorm(X_po, n, pomocnicza);
-	cout << "\nNorma Euklidesowska: " << euklidesNorm(wektorSub(X, X_po, n), n, pomocnicza) << endl;
+    T2 wyj[n];
+    cout << "\nNorma Max: " << maxNorm(wektorSub(X, X_po, wyj, n, pomocnicza), n, pomocnicza);
+	cout << "\nNorma Euklidesowska: " << euklidesNorm(wektorSub(X, X_po, wyj, n, pomocnicza), n, pomocnicza) << endl;
 	cout << "Czas :" << microseconds << "microseconds" << endl;
 
 }
 
 template<typename T, typename T1, typename T2>
 void zad3a(T A, int* X, T1 X_po, T1 B, int n, T2 pomocnicza) {
-	zad1_2(A, X, X_po, B, n, pomocnicza);
+    matrixA3a(A, n, PARAM_K, PARAM_M);
+	zad1_2(A, X, X_po, B, n, pomocnicza);                       //1 1 1
 
 	cout << "\n================\nMacierz trojdiagonalna\n";
 	matrixA3a(A, n, PARAM_K, PARAM_M);
+    matrixMul(A, X, B, n, pomocnicza);
 
     cout << "\n================\nMetoda Thomas'a\n";
+    T2* a = new T2[n];
+    T2* b = new T2[n];
+    T2* c = new T2[n];
+    for (int i = 1; i < n; ++i) {
+        a[i] = A[i][i-1];
+    }
+    a[0] = 0;
+    for (int i = 0; i < n; ++i) {
+        b[i] = A[i][i];
+        c[i] = A[i][i+1];
+        if (i == n-1)
+            c[i] = 0;
+    }
+
     auto start = chrono::high_resolution_clock::now();
-    metodaThomasa(A, X_po, B, n, pomocnicza);
+    metodaThomasa(a, b, c, X_po, B, n, pomocnicza);
     auto elapsed = chrono::high_resolution_clock::now() - start;
 
     long long microseconds = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
 
-    cout << "\nNorma Max: " << maxNorm(X_po, n, pomocnicza);
-    cout << "\nNorma Euklidesowska: " << euklidesNorm(wektorSub(X, X_po, n), n, pomocnicza) << endl;
+    T2 wyj[n];
+    wektorSub(X, X_po, wyj, n, pomocnicza);
+    cout << "\nNorma Max: " << maxNorm(wyj, n, pomocnicza);
+    cout << "\nNorma Euklidesowska: " << euklidesNorm(wyj, n, pomocnicza) << endl;
     cout << "Czas :" << microseconds << "microseconds" << endl;
 }
 
@@ -271,9 +306,10 @@ int main()
 	srand(time(NULL));
 	int n;
 
-	int N[] = { 2, 3, 4, 5, 6, 7, 8, 10, 11, 12, 13, 20, 50, 100, 250, 1000 };
+	cout << "dsa";
+	int N[] = { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 50, 100, 250, 1000 };
 
-	for (size_t i = 0; i < 16; i++) {
+	for (size_t i = 0; i < 23; i++) {
 		n = N[i];
 		int* X = new int[n];
 		macierzX(X, n);
