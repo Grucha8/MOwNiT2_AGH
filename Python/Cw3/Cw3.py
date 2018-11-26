@@ -7,6 +7,8 @@ NMAX = 500  # maksymalna liczba iteracji
 csv_writer1 = csv.writer(open('output1.csv', mode='w', newline=''),  delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 csv_writer2 = csv.writer(open('output2.csv', mode='w', newline=''),  delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
+num_of_solves = [0, 0, 0, 0, 0]
+
 
 def f(x):
     return x**14 + x**16
@@ -179,11 +181,13 @@ def part1():
 
 def part2():
     epss = [0.01, 0.0001, 1e-6, 1e-10]
-    xs = [np.array([i, j, k])
-          for i in np.arange(-2.0, 2.0, 0.1)
-          for j in np.arange(-2.0, 2.0, 0.1)
-          for k in np.arange(-2.0, 2.0, 0.1)
-          ]
+    # xs = [np.array([i, j, k])
+    #       for i in np.arange(-2.0, 2.0, 0.1)
+    #       for j in np.arange(-2.0, 2.0, 0.1)
+    #       for k in np.arange(-2.0, 2.0, 0.1)
+    #       ]
+
+    xs = [np.array([i,i,i]) for i in np.arange(-2.0, 2.0, 0.1)]
 
     for eps in epss:
         print("---------------------------\neps =", eps)
@@ -199,7 +203,7 @@ def part2():
 
 if __name__ == '__main__':
     np.set_printoptions(precision=5, suppress=True)
-    part1()
+    #part1()
 
-    #part2()
+    part2()
     print("===========")
