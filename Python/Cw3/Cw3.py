@@ -1,5 +1,4 @@
 import numpy as np
-from math import floor
 import csv
 
 #[-2.5, 0.5]
@@ -181,11 +180,6 @@ def part1():
 
 def part2():
     epss = [0.01, 0.0001, 1e-6, 1e-10]
-    # xs = [np.array([i, j, k])
-    #       for i in np.arange(-2.0, 2.0, 0.1)
-    #       for j in np.arange(-2.0, 2.0, 0.1)
-    #       for k in np.arange(-2.0, 2.0, 0.1)
-    #       ]
 
     xs = [np.array([i,i,i]) for i in np.arange(-2.0, 2.0, 0.1)]
 
@@ -203,7 +197,7 @@ def part2():
 
 if __name__ == '__main__':
     np.set_printoptions(precision=5, suppress=True)
-    #part1()
+    part1()
 
     part2()
     print("===========")
