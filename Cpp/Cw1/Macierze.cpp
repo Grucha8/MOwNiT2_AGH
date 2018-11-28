@@ -1,4 +1,4 @@
-#include "../importy.h"
+#include "importy.h"
 
 // wypelnienie macierzy A
 template<typename T>

@@ -1,5 +1,5 @@
-#include "../importy.h"
-#include "../Normy.cpp"
+#include "../Cw1/importy.h"
+#include "../Cw1/Normy.cpp"
 
 using namespace std;
 

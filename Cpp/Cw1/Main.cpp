@@ -1,6 +1,6 @@
-#include "../importy.h"
+#include "importy.h"
 #include "Macierze.cpp"
-#include "../Normy.cpp"
+#include "Normy.cpp"
 
 using namespace std;
 
@@ -151,28 +151,6 @@ void metodaThomasa(T1 a, T1 b, T1 c, T1 X, T1 B, int n, T _){   //a b c
      *  b = A[i][i]
      *  c = A[i][i+1]
      */
-//    n--;
-//
-//    c[0] /= b[0];
-//    B[0] /= b[0];
-//
-//    for (int i = 1; i < n; i++) {
-//        c[i] /= b[i] - a[i]*c[i-1];
-//        B[i] = (B[i] - a[i]*B[i-1]) / (b[i] - a[i]*c[i-1]);
-//    }
-//
-//    B[n] = (B[n] - a[n]*B[n-1]) / (b[n] - a[n]*c[n-1]);
-//
-//    for (int i = n; i-- > 0;) {
-//        B[i] -= c[i]*B[i+1];
-//    }
-//
-//    for (int i = 0; i <= n; ++i) {
-//        X[i] = B[i];
-//    }
-
-
-
     for (int i = 1; i < n; i++) {
         T W = a[i] / b[i-1];
         b[i] = b[i] - W * c[i-1];
