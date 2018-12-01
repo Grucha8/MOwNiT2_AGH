@@ -8,7 +8,7 @@ def newton_interpolation(points, x):
     L = [0.0] * nx
 
     A = [None] * (pts + 1)
-    for i in range (pts + 1):
+    for i in range(pts + 1):
         A[i] = [None] * (pts + 1)
 
     def a(j0, j1=None):

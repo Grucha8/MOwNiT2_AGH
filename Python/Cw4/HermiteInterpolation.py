@@ -1,44 +1,44 @@
 import numpy as np
+import math
 
 
 def hermite_interpolation(points, x):
     pts = len(points)
     nx = len(x)
-    m = pts
 
-    dx = [d[0] for d in points]
-    dy = [d[1] for d in points]
+    dx = np.array([d[0] for d in points])
+    dy = np.array([(d[1], d[2]) for d in points])
+    m = 2
 
-    L = [0.0] * nx
+    L = np.zeros(nx)
 
-    def divided_diference(d):
-        if len(d) == 1:
-            for i in range(pts):
-                if dx[i] == d[0]:
-                    return dy[i]
+    dd = divided_diference(dx, dy)
+    w = np.ones(nx)
 
-
-        l = len(d) // 2
-        return (divided_diference(d[l:]) - divided_diference(d[:l])) / (d[-1] - d[0])
-
-    # A = np.zeros((pts, m))
-    A = [0.0] * pts
     for i in range(pts):
-        A[i] = [0.0] * m
-    A[0][0] = dy[0]
-    for i in range(1, pts):
-        for j in range(pts + 1):
-            divided_diference(dy[(i - j):(i+1)])
-
-    def n(k, x_):
-        v = 1.0
-        for l in range(0, k):
-            v *= float(x_ - dx[l])
-        return v
-
-    for i in range(nx):
-        for j in range(pts):
-            L[i] += A[j][j] * n(j, x[i])
-
+        p = x - dx[i]
+        for j in range(m):
+            l = i * m + j
+            L += dd[l][l] * w
+            w *= p
     return L
 
+
+# dy[0][i] = f(xi), dy[1][i] = f'(xi)
+def divided_diference(x, dy):
+    n = len(dy)
+    m = 2
+    dd = np.zeros((n*m, n*m))
+    z = np.zeros(n*m)
+
+    for i in range(n):
+        for j in range(m):
+            k = i * m + j
+            z[k] = x[i]
+            dd[k][0] = dy[i][0]
+            for l in range(1, k+1):
+                if dd[k][l-1] == dd[k-1][l-1]:
+                    dd[k][l] = dy[i][l] / math.factorial(l-1)
+                else:
+                    dd[k][l] = (dd[k][l-1] - dd[k-1][l-1]) / (z[k] - z[k-l])
+    return dd
