@@ -28,7 +28,6 @@ def third_degree_spline(points, LX, dx=None, dxn=None):
                 break
     L[0] = y[0]
 
-    print(L)
     return L
 
 
