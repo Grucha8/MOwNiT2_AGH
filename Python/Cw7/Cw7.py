@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 from Euler_method import *
 from Runge_Kutty_method import *
-from aaa import *
+from Finite_Difference_Method import *
 
 
 # y'' = u + vy + wy'
